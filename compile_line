@@ -1,1 +1,1 @@
-gcc -Wall -Wextra -Werror -I./libft_1/libft/includes -L./libft_1 -lft ft_printf.c
+gcc -Wall -Wextra -Werror -I./libft_1/libft/includes -L./libft_1 -lft ./sources/ft_printf.c
