@@ -48,18 +48,40 @@ void	check_for_precision(const char **str, t_format_s *fs)
 
 void	check_for_length(const char **str, t_format_s *fs)
 {
-	while (CONTAINS_LENGTH(**str))
+	if (CONTAINS_LENGTH(**str))
 	{
-		write_length_mod_bits(**str);
-		fs->length_s = **str;
+		if (**str == 'h')
+		{
+			if (*(*str + 1) == 'h')
+			{
+				fs->length_s = HH;
+				(*str)++;
+			}
+			else
+				fs->length_s = H;
+		}
+		else if (**str == 'l')
+		{
+			if (*(*str + 1) == 'l')
+			{
+				fs->length_s = ll;
+				(*str)++;
+			}
+			else
+				fs->length_s = l;
+		}
+		else
+			fs->length_s = L;
 		(*str)++;
 	}
+	else
+		fs->length_s = 0;
 }
 
 void	check_for_spec(const char **str, t_format_s *fs)
 {
-	if (IS_BASED_10(**str) || IS_BASED_16(**str) || **str == 's' || **str == 'c' 
-	|| **str == 'o' || **str == '%')
+	if (IS_SIGNED(**str) || IS_UNSIGNED(**str) || **str == 's' || **str == 'c' 
+	|| **str == 'f' || **str == 'p' || **str == '%')
 	{
 		fs->format_s = **str;
 		(*str)++;
@@ -68,7 +90,7 @@ void	check_for_spec(const char **str, t_format_s *fs)
 		fs->format_s = 0;
 }
 
-void	parse_f_specifiers(const char **fmt, t_format_s *fs)
+void		parse_f_specifiers(const char **fmt, t_format_s *fs)
 {
 	check_for_flags(fmt, fs);
 	check_for_width(fmt, fs);

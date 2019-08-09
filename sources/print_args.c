@@ -12,62 +12,40 @@
 
 #include "../ft_printf.h"
 
-void		print_bits(unsigned char octet)
+intmax_t	get_signed_nbr(va_list args, int length_s)
 {
-	int 			i;
-	unsigned char 	bit;
+	intmax_t n;
 
-	i = 8;
-	while (i--)
-	{
-		bit = (octet >> i & 1) + '0';
-		write(1, &bit, 1);
-	}
+	n = va_arg(args, intmax_t);
+	if (!length_s)
+		n = (int)n;
+	else if (length_s & HH)
+		n = (char)n;
+	else if (length_s & H)
+		n = (short)n;
+	else if (length_s & l)
+		n = (long)n;
+	else if (length_s & ll)
+		n = (long long)n; 
+	return (n);
 }
 
-void		ft_putnbrUL(unsigned long n)
+uintmax_t	get_unsigned_nbr(va_list args, int length_s)
 {
-	if (n > 9)
-		ft_putnbrUL(n / 10);
-	ft_putchar(n % 10 + '0');
-}
+	uintmax_t n;
 
-void		ft_putnbrULL(unsigned long long n)
-{
-	if (n > 9)
-		ft_putnbrULL(n / 10);
-	ft_putchar(n % 10 + '0');
-}
-
-void		ft_putnbrL(long n)
-{
-	if (n < 0)
-	{
-		ft_putchar('-');
-		n *= -1;
-	}
-	if (n > 9)
-		ft_putnbrL(n / 10);
-	ft_putchar(n % 10 + '0');
-}
-
-void		ft_putnbrLL(long long n)
-{
-	if (n < 0)
-	{
-		ft_putchar('-');
-		n *= -1;
-	}
-	if (n > 9)
-		ft_putnbrLL(n / 10);
-	ft_putchar(n % 10 + '0');
-}
-
-void		ft_putnbrU(unsigned int n)
-{
-	if (n > 9)
-		ft_putnbrU(n / 10);
-	ft_putchar(n % 10 + '0');
+	n = va_arg(args, uintmax_t);
+	if (!length_s)
+		n = (unsigned int)n;
+	else if (length_s & HH)
+		n = (unsigned char)n;
+	else if (length_s & H)
+		n = (unsigned short)n;
+	else if (length_s & l)
+		n = (unsigned long)n;
+	else if (length_s & ll)
+		n = (unsigned long long)n; 
+	return (n);
 }
 
 char	get_hex_digit(int c)
@@ -78,17 +56,17 @@ char	get_hex_digit(int c)
 		return ('a' + c - 10);
 }
 
-void	ft_printhex(unsigned int num, int upper_c)
+void	ft_printhex(intmax_t num, char c)
 {
 	int remainder;
 
 	remainder = num % 16;
 	if (num / 16)	//used recursion to print remainders from last to first
-		ft_printhex(num / 16, upper_c);
+		ft_printhex(num / 16, c);
 	if (remainder > 9)
 	{
 		remainder += 87;
-		if (upper_c)
+		if (c == 'X')
 			remainder -= 32;
 		ft_putchar(remainder);
 	}
@@ -120,17 +98,7 @@ void	ft_printmem(void *addr) //print hex of a value from converted base 10
 		ft_putchar('0');
 }
 
-void	ft_printstr(char *str, int *n)
-{
-	int		i;
-
-	i = 0;
-	while (str[i])
-		write(1, &str[i++], 1);
-	(*n) += i;
-}
-
-void	ft_putoctal(unsigned long num, int *n)
+void	ft_putoctal(uintmax_t num)
 {
 	unsigned long		octal;
 	unsigned long		i;
@@ -139,63 +107,73 @@ void	ft_putoctal(unsigned long num, int *n)
 	i = 1;
 	while (num > 0)
 	{
-		octal = octal + (num % (unsigned long)8) * i;
+		octal = octal + (num % 8) * i;
 		i *= 10;
 		num /= 8;
 	}
-	(*n) += 1;
-	ft_putnbrUL(octal);
+}
+
+void		print_signed_nbr(intmax_t n)
+{
+	if (n < 0)
+	{
+		write(1, "-", 1);
+		if (n == INT_MIN)
+		{
+			write(1, "2", 1);
+			n %= 1000000000;
+		}
+		else if (n == LLONG_MIN)
+		{
+			write(1, "9", 1);
+			n %= 1000000000000000000;
+		}
+		n *= -1;
+	}
+	if (n > 9)
+		print_signed_nbr(n / 10);
+	ft_putchar(n % 10 + '0');
+}
+
+int			ft_display_str(char *str)
+{
+	if (str)
+		ft_putstr(str);
+	return (ft_strlen(str));
+}
+
+void		print_unsigned_nbr(uintmax_t n, char fs)
+{
+	if (fs == 'x' || fs == 'X')
+		ft_printhex(n, fs);
+	else if (fs == 'o')
+		ft_putoctal(n);
+	else
+	{
+		if (n > 9)
+			print_unsigned_nbr(n / 10, fs);
+		ft_putchar(n % 10 + '0');
+	}
 }
 
 void	print_args(t_format_s *ret, va_list args, int *n)
 {
-	int		flag;
-
-	flag = 0;
 	if (ret->format_s == 's')
-		ft_printstr(va_arg(args, char *), n);
+		*n += ft_display_str(va_arg(args, char *));
 	if (ret->format_s == 'c')
 		ft_putchar(va_arg(args, int));
-	if (ret->format_s == 'd' || ret->format_s == 'i')
-	{
-		if (ret->length_s == 'l')
-			ft_putnbrL(va_arg(args, long));
-		else if (ret->length_s == 'll')
-			ft_putnbrLL(va_arg(args, long long));
-		else
-			ft_putnbr(va_arg(args, int));
-	}
-	if (ret->format_s == 'x' || ret->format_s == 'X')
-	{
-		if (ret->format_s == 'X')
-			flag = 1;
-		ft_printhex(va_arg(args, unsigned int), flag);
-		(*n)++;
-	}
+	if (IS_SIGNED(ret->format_s))
+		print_signed_nbr(get_signed_nbr(args, ret->length_s));
+	if (IS_UNSIGNED(ret->format_s))
+		print_unsigned_nbr(get_unsigned_nbr(args, ret->length_s), ret->format_s);
 	if (ret->format_s == 'p')
 	{
 		ft_printmem(va_arg(args, void *));
 		(*n)++;
-	}
-	if (ret->format_s == 'o')
-	{
-		
-		ft_putoctal(va_arg(args, unsigned long), n);
 	}
 	if (ret->format_s == '%')
 	{
 		ft_putchar('%');
 		(*n)++;
 	}
-	if (ret->format_s == 'u')
-	{
-		if (ret->length_s == 'l')
-			ft_putnbrUL(va_arg(args, unsigned long));
-		else if (ret->length_s == 'll')
-			ft_putnbrULL(va_arg(args, long long));
-		else
-			ft_putnbr(va_arg(args, int));
-	}
-	if (ret->format_s == 'U')
-		ft_putnbrUL(va_arg(args, unsigned long));
 }

@@ -48,17 +48,13 @@ int 	ft_printf(const char *restrict format, ...)
 	return (done);
 }
 
-int		main(void)
+/* int		main(void)
 {
-	ft_printf("%lld%lld\n", 0ll, 42ll);
-	ft_printf("%lld\n", LLONG_MAX);
-	ft_printf("%lld\n", LLONG_MIN);
-	ft_printf("%lli%lli\n", 0ll, 42ll);
-	ft_printf("%lli\n", LLONG_MAX);
-	ft_printf("%lli\n", LLONG_MIN);
-	ft_printf("%llu, %llu\n", 0llu, ULLONG_MAX);
-	ft_printf("%llo, %llo\n", 0llu, ULLONG_MAX);
-	ft_printf("%llx, %llx\n", 0llu, ULLONG_MAX);
-	ft_printf("%llX, %llX\n", 0llu, ULLONG_MAX);
+	ft_printf("%x\n", 42);
+	ft_printf("before %x after\n", 42);
+	ft_printf("%x%x%x%x%x\n", 1, 100, 999, 42, 999988888);
+	ft_printf("a%xb%xc%xd\n", 0, 55555, 100000);
+	ft_printf("%x, %x\n", 0, UINT_MAX);
+
 	return (0);
-}
+}*/
