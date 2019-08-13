@@ -20,7 +20,7 @@
 # define LLONG_MIN -(long)((unsigned long)~0 >>1) -1
 # define ULONG_MAX (unsigned long)~0
 # define CONTAINS_FLAG(x) ('#' == x) || ('0' == x) || ('-' == x) || ('+' == x) || (' ' == x)
-# define IS_SIGNED(x) ('d' == x) || ('i' == x)
+# define IS_SIGNED(x) ('d' == x) || ('i' == x) || ('c' == x)
 # define IS_UNSIGNED(x) ('u' == x)|| ('o' == x) || ('x' == x) || ('X' == x)
 # define CONTAINS_LENGTH(x) ('h' == x ) || ('l' == x) || ('L' == x)
 # define SIZE(x) sizeof(x)*8
@@ -54,8 +54,10 @@ void		parse_f_specifiers(const char **fmt, t_format_s *fs);
 void		print_args(t_format_s *ret, va_list args, int *n);
 intmax_t	get_signed_nbr(va_list args, int length_s);
 uintmax_t	get_unsigned_nbr(va_list args, int length_s);
-void		print_signed_nbr(intmax_t n);
-void		print_unsigned_nbr(uintmax_t n, char fs);
+void		print_signed_nbr(t_format_s *ret, intmax_t n, int *nbr_char);
+void		print_unsigned_nbr(uintmax_t n, int *nbr_char);
+int			min_field_width(t_format_s *ret, intmax_t nbr);
+
 #endif
 
 /*
