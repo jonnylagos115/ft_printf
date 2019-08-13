@@ -26,13 +26,19 @@ void	check_for_flags(const char **str, t_format_s *fs)
 
 void	check_for_width(const char **str, t_format_s *fs)
 {
-	if (ft_isdigit(**str))
+	int sign;
+	int n;
+
+	n = 0;
+	sign = 1;
+	if (**str == '-')
+		sign *= -1;
+	while (ft_isdigit(**str))
 	{
-		fs->width_s = **str + '0';
+		n = (n * 10) + **str - '0';
 		(*str)++;
 	}
-	else
-		fs->width_s = 0;
+	fs->width_s = (n * sign);
 }
 
 void	check_for_precision(const char **str, t_format_s *fs)
@@ -80,7 +86,7 @@ void	check_for_length(const char **str, t_format_s *fs)
 
 void	check_for_spec(const char **str, t_format_s *fs)
 {
-	if (IS_SIGNED(**str) || IS_UNSIGNED(**str) || **str == 's' || **str == 'c' 
+	if (IS_SIGNED(**str) || IS_UNSIGNED(**str) || **str == 's' 
 	|| **str == 'f' || **str == 'p' || **str == '%')
 	{
 		fs->format_s = **str;

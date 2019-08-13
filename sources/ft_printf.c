@@ -48,13 +48,15 @@ int 	ft_printf(const char *restrict format, ...)
 	return (done);
 }
 
-/* int		main(void)
+int		main(void)
 {
-	ft_printf("%x\n", 42);
-	ft_printf("before %x after\n", 42);
-	ft_printf("%x%x%x%x%x\n", 1, 100, 999, 42, 999988888);
-	ft_printf("a%xb%xc%xd\n", 0, 55555, 100000);
-	ft_printf("%x, %x\n", 0, UINT_MAX);
+	int	len[3];
+	int	i = -1;
 
+	len[0] = ft_printf("{%-10d}\n", 42);
+ 	len[1] = ft_printf("{%-4d}\n", 10000);
+	len[2] = ft_printf("{%-30d}\n", 10000);
+	while (++i < 3)
+		printf("len[%d]: %d\n", i, len[i]);
 	return (0);
-}*/
+}
