@@ -12,100 +12,51 @@
 
 #include "../ft_printf.h"
 
-intmax_t	get_signed_nbr(va_list args, int length_s)
-{
-	intmax_t n;
-
-	n = va_arg(args, intmax_t);
-	if (!length_s)
-		n = (int)n;
-	else if (length_s & HH)
-		n = (char)n;
-	else if (length_s & H)
-		n = (short)n;
-	else if (length_s & l)
-		n = (long)n;
-	else if (length_s & ll)
-		n = (long long)n; 
-	return (n);
-}
-
-uintmax_t	get_unsigned_nbr(va_list args, int length_s)
-{
-	uintmax_t n;
-
-	n = va_arg(args, uintmax_t);
-	if (!length_s)
-		n = (unsigned int)n;
-	else if (length_s & HH)
-		n = (unsigned char)n;
-	else if (length_s & H)
-		n = (unsigned short)n;
-	else if (length_s & l)
-		n = (unsigned long)n;
-	else if (length_s & ll)
-		n = (unsigned long long)n; 
-	return (n);
-}
-
-char	get_hex_digit(int c)
-{
-	if (c >= 0 && c <= 9)
-		return (c + '0');
-	else
-		return ('a' + c - 10);
-}
-
-void	ft_printhex(uintmax_t num, char c, int *nbr_char)
+void	ft_printhex(t_format_s *ret, uintmax_t num)
 {
 	uintmax_t remainder;
 
 	remainder = num % 16;
 	if (num / 16)	//used recursion to print remainders from last to first
-		ft_printhex(num / 16, c, nbr_char);
+		ft_printhex(ret, num / 16);
 	if (remainder > 9)
 	{
 		remainder += 87;
-		if (c == 'X')
+		if (ret->format_s == 'X')
 			remainder -= 32;
 		ft_putchar(remainder);
-		(*nbr_char)++;
+		ret->num_chr++;
 	}
 	else
 	{
 		ft_putchar(remainder + '0');
-		(*nbr_char)++;
+		ret->num_chr++;
 	}
 }
 
-void	ft_printmem(void *addr, t_format_s *ret, int *nbr_char) //print hex of a value from converted base 10
+void	ft_printmem(t_format_s *ret)
 {
 	int			i;
-	int			j;
-	int			index;
-	int			hex_nbr[16];
-	uintptr_t 	p;
 
-	p = (uintptr_t)addr;
-	i = (sizeof(p) << 3) - 4;
-	j = -1;
-	index = 0;
-	while (i >= 0)
-	{
-		hex_nbr[++j] = get_hex_digit((p >> i) & 0xf);
-		if (!index && hex_nbr[j] > '0')
-			index = j;
-		i -= 4;
-	}
-	if (ret->width_s)
-		(*nbr_char) += min_field_width(ret, (16 - index) + 2);
-	(*nbr_char) += (16 - index) + 2;
+	i = 0;
+	while (ret->args && ret->args[i] == '0')
+		i++;
 	ft_putstr("0x");
-	while (index < 16)
-		ft_putchar(hex_nbr[index++]);
+	ret->num_chr += 2;
+	if (ret->args)
+	{
+		while (ret->args[i])
+		{
+			ft_putchar(ret->args[i++]);
+			ret->num_chr++;
+		}
+		ft_strdel(&ret->args);
+	}
+	else
+		ft_putchar('0');
 }
 
-void	ft_putoctal(uintmax_t num, int *nbr_char)
+void	ft_putoctal(t_format_s *ret, uintmax_t num)
 {
 	uintmax_t		octal;
 	uintmax_t		R;
@@ -125,14 +76,12 @@ void	ft_putoctal(uintmax_t num, int *nbr_char)
 		num = R;
 		p /= 8;
 		ft_putnbr(octal);
-		(*nbr_char)++;
+		ret->num_chr++;
 	}
 }
 
-void	print_signed_nbr(t_format_s *ret, intmax_t n, int *nbr_char)
+void	print_signed_nbr(t_format_s *ret, intmax_t n)
 {
-	if (ret->width_s > 0)
-		(*nbr_char) += min_field_width(ret, n);
 	if (n < 0)
 	{
 		write(1, "-", 1);
@@ -140,73 +89,69 @@ void	print_signed_nbr(t_format_s *ret, intmax_t n, int *nbr_char)
 		{
 			write(1, "2", 1);
 			n %= 1000000000;
-			(*nbr_char)++;
+			ret->num_chr++;
 		}
 		else if (n == LLONG_MIN)
 		{
 			write(1, "9", 1);
 			n %= 1000000000000000000;
-			(*nbr_char)++;
+			ret->num_chr++;
 		}
 		n *= -1;
-		(*nbr_char)++;
+		ret->num_chr++;
 	}
-	if (ret->format_s != 'c')
-	{
-		if (n > 9)
-			print_signed_nbr(ret, n / 10, nbr_char);
-		ft_putchar(n % 10 + '0');
-	}
-	else
-		ft_putchar(n);
-	(*nbr_char)++;
+	if (n > 9)
+		print_signed_nbr(ret, n / 10);
+	ft_putchar(n % 10 + '0');
+	ret->num_chr++;
 }
 
-int			ft_display_str(char *str)
+void		ft_display_str(t_format_s *ret)
 {
-	int len;
-
-	if (str)
+	if (ret->format_s == 's' && ret->args)
 	{
-		len = ft_strlen(str);
-		ft_putstr(str);
+		ret->num_chr += ft_strlen(ret->args);
+		ft_putstr(ret->args);
 	}
-	else
+	else if (ret->format_s == 'c')
 	{
-		len = 6;
-		ft_putstr("(null)");
+		ret->num_chr++;
+		ft_putchar(ret->c);
 	}
-	return (len);
 }
 
-void		print_unsigned_nbr(uintmax_t n, int *nbr_char)
+void		print_unsigned_nbr(t_format_s *ret, uintmax_t n)
 {
 	if (n > 9)
-		print_unsigned_nbr(n / 10, nbr_char);
-	(*nbr_char)++;
+		print_unsigned_nbr(ret, n / 10);
+	ret->num_chr++;
 	ft_putchar(n % 10 + '0');
 }
 
-void	print_args(t_format_s *ret, va_list args, int *n)
+void	print_args(t_format_s *ret)
 {
-	if (ret->format_s == 's')
-		*n += ft_display_str(va_arg(args, char *));
+	if (ret->width_s && ret->flag_s != '-')
+		min_field_width(ret);
+	if (ret->format_s == 'c' || ret->format_s == 's')
+		ft_display_str(ret);
 	if (IS_SIGNED(ret->format_s))
-		print_signed_nbr(ret, get_signed_nbr(args, ret->length_s), n);
+		print_signed_nbr(ret, ret->s_numarg);
 	if (IS_UNSIGNED(ret->format_s))
 	{
 		if (ret->format_s == 'x' || ret->format_s == 'X')
-			ft_printhex(get_unsigned_nbr(args, ret->length_s), ret->format_s, n);
+			ft_printhex(ret, ret->u_numarg);
 		else if (ret->format_s == 'o')
-			ft_putoctal(get_unsigned_nbr(args, ret->length_s), n);
+			ft_putoctal(ret, ret->u_numarg);
 		else
-			print_unsigned_nbr(get_unsigned_nbr(args, ret->length_s), n);
+			print_unsigned_nbr(ret, ret->u_numarg);
 	}
 	if (ret->format_s == 'p')
-		ft_printmem(va_arg(args, void *), ret, n);
+		ft_printmem(ret);
 	if (ret->format_s == '%')
 	{
 		ft_putchar('%');
-		(*n)++;
+		ret->num_chr++;
 	}
+	if (ret->width_s && ret->flag_s == '-')
+		min_field_width(ret);
 }
