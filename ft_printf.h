@@ -33,12 +33,15 @@
 typedef struct s_fspecifier
 {
 	char		*args;
+	char		c;
+	intmax_t	s_numarg;
+	uintmax_t	u_numarg;
 	char		flag_s;
 	int			width_s;
 	int			precision;
 	int			length_s;
 	int			format_s;
-	int			num_args;
+	int			num_chr;
 }				t_format_s;
 
 enum 		s_length_modifier {
@@ -51,12 +54,13 @@ enum 		s_length_modifier {
 };
 
 void		parse_f_specifiers(const char **fmt, t_format_s *fs);
-void		print_args(t_format_s *ret, va_list args, int *n);
+void		print_args(t_format_s *ret);
+void		handle_args(t_format_s *ret, va_list args);
 intmax_t	get_signed_nbr(va_list args, int length_s);
 uintmax_t	get_unsigned_nbr(va_list args, int length_s);
-void		print_signed_nbr(t_format_s *ret, intmax_t n, int *nbr_char);
-void		print_unsigned_nbr(uintmax_t n, int *nbr_char);
-int			min_field_width(t_format_s *ret, intmax_t nbr);
+void		print_signed_nbr(t_format_s *ret, intmax_t n);
+void		print_unsigned_nbr(t_format_s *ret, uintmax_t n);
+void		min_field_width(t_format_s *ret);
 
 #endif
 
