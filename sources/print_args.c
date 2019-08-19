@@ -34,28 +34,6 @@ void	ft_printhex(t_format_s *ret, uintmax_t num)
 	}
 }
 
-void	ft_printmem(t_format_s *ret)
-{
-	int			i;
-
-	i = 0;
-	while (ret->args && ret->args[i] == '0')
-		i++;
-	ft_putstr("0x");
-	ret->num_chr += 2;
-	if (ret->args)
-	{
-		while (ret->args[i])
-		{
-			ft_putchar(ret->args[i++]);
-			ret->num_chr++;
-		}
-		ft_strdel(&ret->args);
-	}
-	else
-		ft_putchar('0');
-}
-
 void	ft_putoctal(t_format_s *ret, uintmax_t num)
 {
 	uintmax_t		octal;
@@ -69,6 +47,11 @@ void	ft_putoctal(t_format_s *ret, uintmax_t num)
 	n = 0;
 	while (++n <= 21 && ((p * 8) < num))
 		p *= 8;
+	if (num && ret->flag_s & SHARP)
+	{
+		write(1, "0", 1);
+		ret->num_chr++;
+	}
 	while (n-- > 0)
 	{
 		octal = (num / p);
@@ -85,6 +68,8 @@ void	print_signed_nbr(t_format_s *ret, intmax_t n)
 	if (n < 0)
 	{
 		write(1, "-", 1);
+		if (ret->flag_s & ZERO)
+			min_field_width(ret);
 		if (n == INT_MIN)
 		{
 			write(1, "2", 1);
@@ -108,7 +93,7 @@ void	print_signed_nbr(t_format_s *ret, intmax_t n)
 
 void		ft_display_str(t_format_s *ret)
 {
-	if (ret->format_s == 's' && ret->args)
+	if ((ret->format_s == 's' || ret->format_s == 'p') && ret->args)
 	{
 		ret->num_chr += ft_strlen(ret->args);
 		ft_putstr(ret->args);
@@ -130,28 +115,35 @@ void		print_unsigned_nbr(t_format_s *ret, uintmax_t n)
 
 void	print_args(t_format_s *ret)
 {
-	if (ret->width_s && ret->flag_s != '-')
-		min_field_width(ret);
-	if (ret->format_s == 'c' || ret->format_s == 's')
+	print_flags(ret);
+	if (ret->format_s == 'c' || ret->format_s == 's' || ret->format_s == 'p')
 		ft_display_str(ret);
 	if (IS_SIGNED(ret->format_s))
 		print_signed_nbr(ret, ret->s_numarg);
 	if (IS_UNSIGNED(ret->format_s))
 	{
 		if (ret->format_s == 'x' || ret->format_s == 'X')
+		{
+			if (ret->u_numarg && ret->flag_s & SHARP)
+			{
+				ft_putchar('0');
+				ft_putchar(ret->format_s);
+				ret->num_chr += 2;
+			}
 			ft_printhex(ret, ret->u_numarg);
+		}
 		else if (ret->format_s == 'o')
 			ft_putoctal(ret, ret->u_numarg);
 		else
 			print_unsigned_nbr(ret, ret->u_numarg);
 	}
-	if (ret->format_s == 'p')
-		ft_printmem(ret);
 	if (ret->format_s == '%')
 	{
 		ft_putchar('%');
 		ret->num_chr++;
 	}
-	if (ret->width_s && ret->flag_s == '-')
+	if (ret->width_s && (ret->flag_s & MINUS))
 		min_field_width(ret);
+	if (ret->format_s == 'p')
+		ft_strdel(&ret->args);
 }

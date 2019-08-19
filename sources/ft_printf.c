@@ -47,19 +47,18 @@ int 	ft_printf(const char *restrict format, ...)
 	return (done);
 }
 
-//infinite loop in width file so fix//
-int		main(void)
+/* int		main(void)
 {
-	int	len[5];
+	int	len[6];
 	int	i = -1;
 
-	len[0] = ft_printf("{%10d}\n", 42);
- 	len[1] = ft_printf("{%4d}\n", 10000);
-	len[2] = ft_printf("{%30d}\n", 10000);
-	len[3] = ft_printf("{%10d}\n", -42);
-	//len[4] = ft_printf("{%3c}\n", 0);
-	len[4] = ft_printf("{%5p}\n", (void *)0);
-	while (++i < 5)
+	len[0] = ft_printf("{% %}\n");
+ 	len[1] = ft_printf("{%+ d}\n", 42);
+	len[2] = ft_printf("{%+03d}\n", 0);
+	len[3] = ft_printf("{% 03d}\n", 0);
+	len[4] = ft_printf("{%0-3d}\n", 0);
+	len[5] = ft_printf("{%+03d}\n", 12);
+	while (++i < 6)
 		printf("len[%d]: %d\n", i, len[i]);
 	return (0);
-}
+}*/

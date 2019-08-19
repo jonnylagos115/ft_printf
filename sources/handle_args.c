@@ -58,22 +58,26 @@ char	get_hex_digit(int c)
 
 void	ft_store_memaddr(void *addr, t_format_s *ret)
 {
+	char		buf[16];
 	int			i;
 	int			j;
 	uintptr_t 	p;
 
 	p = (uintptr_t)addr;
 	i = (sizeof(p) << 3) - 4;
-	j = -1;
-	if (p == 0)
-		ret->args = NULL;
-	else
-		ret->args = ft_strnew(16);
+	j = 1;
+	ft_memcpy(buf, "0x", 2);
+	while ((p && i >= 0) && get_hex_digit((p >> i) & 0xf) == '0')
+		i -= 4;
 	while (p && i >= 0)
 	{
-		ret->args[++j] = get_hex_digit((p >> i) & 0xf);
+		buf[++j] = get_hex_digit((p >> i) & 0xf);
 		i -= 4;
 	}
+	if (!p)
+		buf[++j] = '0';
+	buf[j + 1] = '\0';
+	ret->args = ft_strdup(buf);
 }
 
 void	handle_args(t_format_s *ret, va_list args)

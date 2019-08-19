@@ -15,30 +15,38 @@
 
 void	check_for_flags(const char **str, t_format_s *fs)
 {
-	if (CONTAINS_FLAG(**str))
+	fs->flag_s = 0;
+	while (CONTAINS_FLAG(**str))
 	{
-		fs->flag_s = **str;
+		if (**str == '-')
+			fs->flag_s |= MINUS;
+		if (**str == '+')
+			fs->flag_s |= PLUS;
+		if (**str == ' ')
+			fs->flag_s |= SPACE;
+		if (**str == '#')
+			fs->flag_s |= SHARP;
+		if (**str == '0')
+			fs->flag_s |= ZERO;
+		if ((fs->flag_s & ZERO) && (fs->flag_s & MINUS))
+			fs->flag_s &= ~(ZERO);
+		if ((fs->flag_s & SPACE) && (fs->flag_s & PLUS))
+			fs->flag_s &= ~(SPACE);
 		(*str)++;
 	}
-	else
-		fs->flag_s = 0;
 }
 
 void	check_for_width(const char **str, t_format_s *fs)
 {
-	int sign;
 	int n;
 
 	n = 0;
-	sign = 1;
-	if (**str == '-')
-		sign *= -1;
 	while (ft_isdigit(**str))
 	{
 		n = (n * 10) + **str - '0';
 		(*str)++;
 	}
-	fs->width_s = (n * sign);
+	fs->width_s = n;
 }
 
 void	check_for_precision(const char **str, t_format_s *fs)
@@ -87,13 +95,14 @@ void	check_for_length(const char **str, t_format_s *fs)
 void	check_for_spec(const char **str, t_format_s *fs)
 {
 	if (IS_SIGNED(**str) || IS_UNSIGNED(**str) || **str == 's' 
-	|| **str == 'f' || **str == 'p' || **str == '%')
+	|| **str == 'c' || **str == 'f' || **str == 'p' || **str == '%')
 	{
 		fs->format_s = **str;
 		(*str)++;
 	}
 	else
 		fs->format_s = 0;
+	fs->args = NULL;
 }
 
 void		parse_f_specifiers(const char **fmt, t_format_s *fs)
