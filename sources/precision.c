@@ -1,28 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   flags.c                                            :+:      :+:    :+:   */
+/*   precision.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jlagos <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/08/18 18:39:20 by jlagos            #+#    #+#             */
-/*   Updated: 2019/08/18 18:39:32 by jlagos           ###   ########.fr       */
+/*   Created: 2019/08/20 12:32:39 by jlagos            #+#    #+#             */
+/*   Updated: 2019/08/20 12:32:53 by jlagos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../ft_printf.h"
 
-void	print_flags(t_format_s *ret)
+void	prec_field_control(t_format_s *ret)
 {
-	if (ret->s_numarg >= 0 && ret->format_s != '%' && (ret->flag_s & PLUS || ret->flag_s & SPACE))
+	if (ret->precision < 0 && (!ret->s_numarg || !ret->u_numarg))
 	{
-		if (ret->flag_s & PLUS)
-			ft_putchar('+');
-		else
-			ft_putchar(' ');
-		ret->num_chr++;
-		ret->num_digit++;
-		ret->flag_s &= ~(PLUS);
-		ret->flag_s &= ~(SPACE);
+		ret->format_s = 0;
+		
+	}
+	if (ret->precision > ret->num_digit)
+    {
+		if (ret->s_numarg < 0)
+		{
+			write(1, "-", 1);
+			ret->s_numarg *= -1;
+			ret->num_chr++;
+        }
+        ret->precision -= ret->num_digit;
+        ret->num_chr += ret->precision;
+        while (ret->precision--)
+            write(1, "0", 1);
 	}
 }

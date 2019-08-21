@@ -116,6 +116,11 @@ void		print_unsigned_nbr(t_format_s *ret, uintmax_t n)
 void	print_args(t_format_s *ret)
 {
 	print_flags(ret);
+	if (ret->width_s && !(ret->flag_s & MINUS))
+		if (!((ret->flag_s & ZERO) && ret->s_numarg < 0))
+			min_field_width(ret);
+	if (ret->precision != 0)
+		prec_field_control(ret);
 	if (ret->format_s == 'c' || ret->format_s == 's' || ret->format_s == 'p')
 		ft_display_str(ret);
 	if (IS_SIGNED(ret->format_s))

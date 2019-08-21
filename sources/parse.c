@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "../ft_printf.h"
-#include <printf.h>
 
 void	check_for_flags(const char **str, t_format_s *fs)
 {
@@ -38,7 +37,7 @@ void	check_for_flags(const char **str, t_format_s *fs)
 
 void	check_for_width(const char **str, t_format_s *fs)
 {
-	int n;
+	int		n;
 
 	n = 0;
 	while (ft_isdigit(**str))
@@ -51,13 +50,27 @@ void	check_for_width(const char **str, t_format_s *fs)
 
 void	check_for_precision(const char **str, t_format_s *fs)
 {
+	int		n;
+
+	n = 0;
 	if (**str == '.')
 	{
-		fs->precision = 1;
 		(*str)++;
+		if (**str == '0' || !ft_isdigit(**str))
+		{
+			n = -1;
+			(*str)++;
+		}
+		else
+		{
+			while (ft_isdigit(**str))
+			{
+				n = (n * 10) + **str - '0';
+				(*str)++;
+			}
+		}
 	}
-	else
-		fs->precision = 0;
+	fs->precision = n;
 }
 
 void	check_for_length(const char **str, t_format_s *fs)
@@ -92,7 +105,7 @@ void	check_for_length(const char **str, t_format_s *fs)
 		fs->length_s = 0;
 }
 
-void	check_for_spec(const char **str, t_format_s *fs)
+int		check_for_spec(const char **str, t_format_s *fs)
 {
 	if (IS_SIGNED(**str) || IS_UNSIGNED(**str) || **str == 's' 
 	|| **str == 'c' || **str == 'f' || **str == 'p' || **str == '%')
@@ -101,15 +114,19 @@ void	check_for_spec(const char **str, t_format_s *fs)
 		(*str)++;
 	}
 	else
+	{
 		fs->format_s = 0;
+		return (1);
+	}
 	fs->args = NULL;
+	return (0);
 }
 
-void		parse_f_specifiers(const char **fmt, t_format_s *fs)
+int		parse_f_specifiers(const char **fmt, t_format_s *fs)
 {
 	check_for_flags(fmt, fs);
 	check_for_width(fmt, fs);
 	check_for_precision(fmt, fs);
 	check_for_length(fmt, fs);
-	check_for_spec(fmt, fs);
+	return (check_for_spec(fmt, fs));
 }

@@ -83,16 +83,34 @@ void	ft_store_memaddr(void *addr, t_format_s *ret)
 void	handle_args(t_format_s *ret, va_list args)
 {
 	if (IS_SIGNED(ret->format_s))
+	{
 		ret->s_numarg = get_signed_nbr(args, ret->length_s);
+		ret->num_digit = snbr_digits(ret->s_numarg);
+		if (ret->precision >= 0)
+		{
+			if (ret->width_s < ret->num_digit)
+				ret->width_s = 0;
+			if (ret->precision < ret->num_digit)
+				ret->precision = 0;
+		}
+	}
 	else if (IS_UNSIGNED(ret->format_s))
+	{
 		ret->u_numarg = get_unsigned_nbr(args, ret->length_s);
-	else if (ret->format_s == 'p')
-		ft_store_memaddr(va_arg(args, char *), ret);
+		ret->num_digit = unbr_digits(ret->u_numarg, ret->format_s);
+	}
+	else if (ret->format_s == 'c' || ret->format_s == '%')
+	{
+		if (ret->format_s == 'c')
+			ret->c = va_arg(args, int);
+		ret->num_digit = 1;
+	}
 	else
 	{
-		if (ret->format_s == 's')
+		if (ret->format_s == 'p')
+			ft_store_memaddr(va_arg(args, char *), ret);
+		else if (ret->format_s == 's')
 			ret->args = va_arg(args, char *);
-		else if (ret->format_s == 'c')
-			ret->c = va_arg(args, int);
+		ret->num_digit = ft_strlen(ret->args);
 	}
 }
