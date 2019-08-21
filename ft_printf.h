@@ -42,6 +42,7 @@ typedef struct s_fspecifier
 	int			length_s;
 	int			format_s;
 	int			num_chr;
+	int			num_digit;
 }				t_format_s;
 
 enum 		s_length_modifier {
@@ -61,7 +62,7 @@ enum		s_flags {
 	ZERO = 1 << 4,
 };
 
-void		parse_f_specifiers(const char **fmt, t_format_s *fs);
+int			parse_f_specifiers(const char **fmt, t_format_s *fs);
 void		print_args(t_format_s *ret);
 void		handle_args(t_format_s *ret, va_list args);
 intmax_t	get_signed_nbr(va_list args, int length_s);
@@ -70,7 +71,10 @@ void		print_signed_nbr(t_format_s *ret, intmax_t n);
 void		print_unsigned_nbr(t_format_s *ret, uintmax_t n);
 void		min_field_width(t_format_s *ret);
 void		print_flags(t_format_s *ret);
+void    	prec_field_control(t_format_s *ret);
 char		get_hex_digit(int c);
+int			snbr_digits(intmax_t nbr);
+int			unbr_digits(uintmax_t nbr, char fs);
 
 #endif
 

@@ -22,7 +22,7 @@ DIR_O = temporary
 
 HEADER = include
 
-SOURCES = ft_printf.c parse.c print_args.c handle_args.c width.c flags.c
+SOURCES = ft_printf.c parse.c print_args.c handle_args.c width.c flags.c precision.c
 
 SRCS = $(addprefix $(DIR_S)/,$(SOURCES))
 
