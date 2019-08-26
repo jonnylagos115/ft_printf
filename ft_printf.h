@@ -21,6 +21,7 @@
 # define ULONG_MAX (unsigned long)~0
 # define CONTAINS_FLAG(x) ('#' == x) || ('0' == x) || ('-' == x) || ('+' == x) || (' ' == x)
 # define IS_SIGNED(x) ('d' == x) || ('i' == x)
+# define NO_NBR(x) ('c' != x) && ('s' != x)
 # define IS_UNSIGNED(x) ('u' == x)|| ('o' == x) || ('x' == x) || ('X' == x)
 # define CONTAINS_LENGTH(x) ('h' == x ) || ('l' == x) || ('L' == x)
 # define SIZE(x) sizeof(x)*8
@@ -62,6 +63,8 @@ enum		s_flags {
 	ZERO = 1 << 4,
 };
 
+int 		ft_printf(const char *restrict format, ...);
+int 		my_vfprintf(const char *fmt, va_list arg);
 int			parse_f_specifiers(const char **fmt, t_format_s *fs);
 void		print_args(t_format_s *ret);
 void		handle_args(t_format_s *ret, va_list args);
