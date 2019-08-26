@@ -57,13 +57,26 @@ void	min_field_width(t_format_s *ret)
 	char	flag;
 
 	flag = ' ';
-	if (ret->width_s >= ret->num_digit && ret->width_s > ret->precision)
+	if (ret->precision > 0 && ret->precision > ret->num_digit)
+		ret->precision -= ret->num_digit;
+	else if (ret->format_s == 's' && ret->precision > 0)
+		ret->num_digit = ret->precision;
+	if (ret->format_s == 's' && ret->width_s >= ret->num_digit)
+	{
+		if (ret->precision != -2)
+			ret->width_s -= ret->num_digit;
+		ret->num_chr += ret->width_s;
+		while (ret->width_s--)
+			write(1, &flag, 1);
+	}
+	else if (ret->width_s >= ret->num_digit && ret->width_s > ret->precision)
 	{
 		if (ret->s_numarg < 0)
 			ret->width_s--;
-		ret->width_s -= ret->num_digit;
-		if (ret->precision)
-			ret->width_s -= ret->precision - ret->num_digit;
+		if (ret->precision < 0 || ret->precision < ret->num_digit)
+			ret->width_s -= ret->num_digit;
+		else
+			ret->width_s -= ret->precision + ret->num_digit;
 		ret->num_chr += ret->width_s;
 		if (ret->flag_s & ZERO)
 			flag = '0';

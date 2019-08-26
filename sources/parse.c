@@ -56,19 +56,13 @@ void	check_for_precision(const char **str, t_format_s *fs)
 	if (**str == '.')
 	{
 		(*str)++;
-		if (**str == '0' || !ft_isdigit(**str))
+		while (ft_isdigit(**str))
 		{
-			n = -1;
+			n = (n * 10) + **str - '0';
 			(*str)++;
 		}
-		else
-		{
-			while (ft_isdigit(**str))
-			{
-				n = (n * 10) + **str - '0';
-				(*str)++;
-			}
-		}
+		if (!n)
+			n = -2;
 	}
 	fs->precision = n;
 }

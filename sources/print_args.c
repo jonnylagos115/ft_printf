@@ -93,10 +93,14 @@ void	print_signed_nbr(t_format_s *ret, intmax_t n)
 
 void		ft_display_str(t_format_s *ret)
 {
-	if ((ret->format_s == 's' || ret->format_s == 'p') && ret->args)
+	int		i;
+
+	if ((ret->format_s == 's' || ret->format_s == 'p') && ret->args && ret->precision != -2)
 	{
-		ret->num_chr += ft_strlen(ret->args);
-		ft_putstr(ret->args);
+		ret->num_chr += ret->num_digit;
+		i = -1;
+		while (++i < ret->num_digit)
+			ft_putchar(ret->args[i]);
 	}
 	else if (ret->format_s == 'c')
 	{
@@ -116,16 +120,16 @@ void		print_unsigned_nbr(t_format_s *ret, uintmax_t n)
 void	print_args(t_format_s *ret)
 {
 	print_flags(ret);
-	if (ret->width_s && !(ret->flag_s & MINUS))
+	if (!(ret->flag_s & MINUS))
 		if (!((ret->flag_s & ZERO) && ret->s_numarg < 0))
 			min_field_width(ret);
-	if (ret->precision != 0)
+	if (ret->precision)
 		prec_field_control(ret);
 	if (ret->format_s == 'c' || ret->format_s == 's' || ret->format_s == 'p')
 		ft_display_str(ret);
-	if (IS_SIGNED(ret->format_s))
+	if ((IS_SIGNED(ret->format_s)) && ret->precision != -2)
 		print_signed_nbr(ret, ret->s_numarg);
-	if (IS_UNSIGNED(ret->format_s))
+	if ((IS_UNSIGNED(ret->format_s)) && ret->precision != -2)
 	{
 		if (ret->format_s == 'x' || ret->format_s == 'X')
 		{

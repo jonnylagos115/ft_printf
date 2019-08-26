@@ -48,21 +48,3 @@ int 	ft_printf(const char *restrict format, ...)
     va_end(args);
 	return (done);
 }
-
-int		main(void)
-{
-	int	len[8];
-	int	i = -1;
-
-	len[0] = ft_printf("{%03.d}\n", 0);
- 	len[1] = ft_printf("%.4d\n", 424242);
-	len[2] = ft_printf("%.4d\n", -424242);
-	len[3] = ft_printf("%15.4d\n", 42);
-	len[4] = ft_printf("%15.4d\n", 424242);
-	len[5] = ft_printf("%8.4d\n", 424242424);
-	len[6] = ft_printf("%15.4d\n", -42);
-	len[7] = ft_printf("%15.4d\n", -424242);
-	while (++i < 8)
-		printf("len[%d]: %d\n", i, len[i]);
-	return (0);
-}

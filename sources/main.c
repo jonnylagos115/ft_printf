@@ -1,29 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   precision.c                                        :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jlagos <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/08/20 12:32:39 by jlagos            #+#    #+#             */
-/*   Updated: 2019/08/20 12:32:53 by jlagos           ###   ########.fr       */
+/*   Created: 2019/08/26 13:25:24 by jlagos            #+#    #+#             */
+/*   Updated: 2019/08/26 13:25:40 by jlagos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../ft_printf.h"
 
-void	prec_field_control(t_format_s *ret)
+int		main(void)
 {
-	if (ret->precision >= ret->num_digit && (NO_NBR(ret->format_s)))
-    {
-		if (ret->s_numarg < 0)
-		{
-			write(1, "-", 1);
-			ret->s_numarg *= -1;
-			ret->num_chr++;
-        }
-        ret->num_chr += ret->precision;
-        while (ret->precision--)
-            write(1, "0", 1);
-	}
+	int	len[7];
+	int	i = -1;
+
+ 	len[0] = ft_printf("%.c\n", 0);
+	len[1] = ft_printf("{%03.2d}\n", 0);
+	len[2] = ft_printf("%4.15d\n", -42);
+	len[3] = ft_printf("%15.4d\n", 424242);
+	len[4] = ft_printf("%8.4d\n", 424242424);
+	len[5] = ft_printf("%15.4d\n", -42);
+	len[6] = ft_printf("%15.4d\n", -424242);
+	while (++i < 7)
+		printf("len[%d]: %d\n", i, len[i]);
+	return (0);
 }
