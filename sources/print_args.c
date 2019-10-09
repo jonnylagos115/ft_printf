@@ -12,53 +12,30 @@
 
 #include "../ft_printf.h"
 
-void	ft_printhex(t_format_s *ret, uintmax_t num)
+void	ft_print_integer(t_format_s *ret, int base)
 {
-	uintmax_t remainder;
+	char		base_digits[16];
+	int			converted_nbr[64];
+	int			i;
 
-	remainder = num % 16;
-	if (num / 16)	//used recursion to print remainders from last to first
-		ft_printhex(ret, num / 16);
-	if (remainder > 9)
-	{
-		remainder += 87;
-		if (ret->format_s == 'X')
-			remainder -= 32;
-		ft_putchar(remainder);
-		ret->num_chr++;
-	}
+	i = -1;
+	if (ret->format_s == 'X')
+		ft_strcpy(base_digits, "0123456789ABCDEF");
 	else
+		ft_strcpy(base_digits, "0123456789abcdef");
+	while (ret->u_numarg != 0)
 	{
-		ft_putchar(remainder + '0');
-		ret->num_chr++;
+		converted_nbr[++i] = ret->u_numarg % base;
+		ret->u_numarg = ret->u_numarg / base;
 	}
-}
-
-void	ft_putoctal(t_format_s *ret, uintmax_t num)
-{
-	uintmax_t		octal;
-	uintmax_t		R;
-	uintmax_t 		p;
-	int				n;
-
-	octal = 0;
-	R = 1;
-	p = 1;
-	n = 0;
-	while (++n <= 21 && ((p * 8) < num))
-		p *= 8;
-	if (num && ret->flag_s & SHARP)
+	if (i < 0)
 	{
 		write(1, "0", 1);
 		ret->num_chr++;
 	}
-	while (n-- > 0)
+	while (i >= 0)
 	{
-		octal = (num / p);
-		R = num % p;
-		num = R;
-		p /= 8;
-		ft_putnbr(octal);
+		write(1, &base_digits[converted_nbr[i--]], 1);
 		ret->num_chr++;
 	}
 }
@@ -67,9 +44,8 @@ void	print_signed_nbr(t_format_s *ret, intmax_t n)
 {
 	if (n < 0)
 	{
-		write(1, "-", 1);
-		if (ret->flag_s & ZERO)
-			min_field_width(ret);
+		if (!ret->no_minus)
+			write(1, "-", 1);
 		if (n == INT_MIN)
 		{
 			write(1, "2", 1);
@@ -91,68 +67,94 @@ void	print_signed_nbr(t_format_s *ret, intmax_t n)
 	ret->num_chr++;
 }
 
+void		print_float_nbr(t_format_s *ret, double n)
+{
+	int				num_len;
+	int				len;
+	intmax_t		some_nbr;
+	int				i;
+
+	num_len = snbr_digits((intmax_t)n);
+	len = n;
+	i = -1;
+	print_signed_nbr(ret, (intmax_t)n);
+	write(1, ".", 1);
+	if (n < 0)
+		n *= (double)-1;
+	while (++i < 6)
+	{
+		some_nbr = n * 10;
+		ft_putnbr(some_nbr % 10);
+		n *= 10;
+	}
+	ret->num_chr += ret->num_digit - num_len;
+}
+
 void		ft_display_str(t_format_s *ret)
 {
 	int		i;
 
-	if ((ret->format_s == 's' || ret->format_s == 'p') && ret->args && ret->precision != -2)
+	if ((ret->format_s == 's' || ret->format_s == 'p') && ret->args)
 	{
-		ret->num_chr += ret->num_digit;
-		i = -1;
-		while (++i < ret->num_digit)
-			ft_putchar(ret->args[i]);
+		if (ret->no_prec != 1)
+		{
+			i = -1;
+			while (ret->args[++i])
+			{
+				ft_putchar(ret->args[i]);
+				ret->num_chr++;
+			}
+		}
+		else if (ret->format_s == 'p') // For cases like "%.0p", "%.p" IF the argument is 0 
+		{
+			write(1, "0x", 2);
+			ret->num_chr += 2;
+		}
+		if (ret->format_s == 'p' && ret->args[1] != 'x')
+		{
+			ret->args = ret->args - 2;
+			ret->num_chr += 2;
+		}
+		ft_strdel(&ret->args);
 	}
-	else if (ret->format_s == 'c')
-	{
-		ret->num_chr++;
-		ft_putchar(ret->c);
-	}
-}
-
-void		print_unsigned_nbr(t_format_s *ret, uintmax_t n)
-{
-	if (n > 9)
-		print_unsigned_nbr(ret, n / 10);
-	ret->num_chr++;
-	ft_putchar(n % 10 + '0');
 }
 
 void	print_args(t_format_s *ret)
 {
-	print_flags(ret);
-	if (!(ret->flag_s & MINUS))
-		if (!((ret->flag_s & ZERO) && ret->s_numarg < 0))
-			min_field_width(ret);
-	if (ret->precision)
-		prec_field_control(ret);
-	if (ret->format_s == 'c' || ret->format_s == 's' || ret->format_s == 'p')
-		ft_display_str(ret);
-	if ((IS_SIGNED(ret->format_s)) && ret->precision != -2)
-		print_signed_nbr(ret, ret->s_numarg);
-	if ((IS_UNSIGNED(ret->format_s)) && ret->precision != -2)
+	handle_flags(ret);
+	if ((ret->width_s + ret->precision) > ret->num_digit)
 	{
-		if (ret->format_s == 'x' || ret->format_s == 'X')
-		{
-			if (ret->u_numarg && ret->flag_s & SHARP)
-			{
-				ft_putchar('0');
-				ft_putchar(ret->format_s);
-				ret->num_chr += 2;
-			}
-			ft_printhex(ret, ret->u_numarg);
-		}
-		else if (ret->format_s == 'o')
-			ft_putoctal(ret, ret->u_numarg);
-		else
-			print_unsigned_nbr(ret, ret->u_numarg);
+		handle_w_p(ret); //handles values for min_width & precision
+		print_w_p(ret); //where it prints min_width & precision
 	}
-	if (ret->format_s == '%')
+	else
+		print_flags(ret);
+	if (ret->format_s == 's' || ret->format_s == 'p')
+		ft_display_str(ret);
+	if ((IS_SIGNED(ret->format_s)) && ret->no_prec != 1)
+		print_signed_nbr(ret, ret->s_numarg);
+	if ((IS_UNSIGNED(ret->format_s)) && ret->no_prec != 1)
 	{
-		ft_putchar('%');
+		if ((ret->format_s == 'x' || ret->format_s == 'X'))
+			ft_print_integer(ret, 16);
+		else if (ret->format_s == 'o')
+			ft_print_integer(ret, 8);
+		else
+			ft_print_integer(ret, 10);
+	}
+	/*if (ret->format_s == 'o' && ret->flag_s & SHARP) //precision is ignored for this edge case
+		ft_putoctal(ret, ret->u_numarg);*/
+	if (ret->format_s == 'c' || ret->format_s == '%')
+	{
+		if (ret->format_s == '%')
+			write(1, "%", 1);
+		else
+			ft_putchar(ret->c);
 		ret->num_chr++;
 	}
-	if (ret->width_s && (ret->flag_s & MINUS))
-		min_field_width(ret);
-	if (ret->format_s == 'p')
-		ft_strdel(&ret->args);
+	if (ret->format_s == 'f')
+		print_float_nbr(ret, ret->f_numarg);
+	if (ret->width_s > 0)
+		print_w_p(ret);
+	//printf("ret->num_chr: %d, ret->width_s: %d\n", ret->num_chr, ret->width_s);
 }

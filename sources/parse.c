@@ -35,7 +35,7 @@ void	check_for_flags(const char **str, t_format_s *fs)
 	}
 }
 
-void	check_for_width(const char **str, t_format_s *fs)
+void	check_for_wp(const char **str, t_format_s *fs)
 {
 	int		n;
 
@@ -46,12 +46,6 @@ void	check_for_width(const char **str, t_format_s *fs)
 		(*str)++;
 	}
 	fs->width_s = n;
-}
-
-void	check_for_precision(const char **str, t_format_s *fs)
-{
-	int		n;
-
 	n = 0;
 	if (**str == '.')
 	{
@@ -62,50 +56,44 @@ void	check_for_precision(const char **str, t_format_s *fs)
 			(*str)++;
 		}
 		if (!n)
-			n = -2;
+			fs->no_prec = 1;
 	}
 	fs->precision = n;
 }
 
 void	check_for_length(const char **str, t_format_s *fs)
 {
+	fs->length_s = 0;
 	if (CONTAINS_LENGTH(**str))
 	{
-		if (**str == 'h')
+		if (*(*str + 1) == 'h')
 		{
-			if (*(*str + 1) == 'h')
-			{
-				fs->length_s = HH;
-				(*str)++;
-			}
-			else
-				fs->length_s = H;
+			fs->length_s |= HH;
+			(*str)++;
+		}
+		else if (**str == 'h')
+			fs->length_s |= H;
+		else if (*(*str + 1) == 'l')
+		{
+			fs->length_s |= ll;
+			(*str)++;
 		}
 		else if (**str == 'l')
-		{
-			if (*(*str + 1) == 'l')
-			{
-				fs->length_s = ll;
-				(*str)++;
-			}
-			else
-				fs->length_s = l;
-		}
-		else
-			fs->length_s = L;
+			fs->length_s |= l;
+		else if (**str == 'L')
+			fs->length_s |= L;
 		(*str)++;
 	}
-	else
-		fs->length_s = 0;
 }
 
 int		check_for_spec(const char **str, t_format_s *fs)
 {
-	if (IS_SIGNED(**str) || IS_UNSIGNED(**str) || **str == 's' 
-	|| **str == 'c' || **str == 'f' || **str == 'p' || **str == '%')
+	if (IS_FORMAT_SPEC(**str))
 	{
 		fs->format_s = **str;
 		(*str)++;
+		if (fs->format_s == 'U')
+			fs->length_s = l;
 	}
 	else
 	{
@@ -119,8 +107,7 @@ int		check_for_spec(const char **str, t_format_s *fs)
 int		parse_f_specifiers(const char **fmt, t_format_s *fs)
 {
 	check_for_flags(fmt, fs);
-	check_for_width(fmt, fs);
-	check_for_precision(fmt, fs);
+	check_for_wp(fmt, fs);
 	check_for_length(fmt, fs);
 	return (check_for_spec(fmt, fs));
 }

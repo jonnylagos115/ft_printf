@@ -24,13 +24,13 @@ int 	my_vfprintf(const char *fmt, va_list arg)
 			fmt++;
 			if (!parse_f_specifiers(&fmt, &fs))
 			{
-				handle_args(&fs, arg);
+				handle_ag(&fs, arg);
 				print_args(&fs);
 			}
 		}
 		if (*fmt)
 		{
-			ft_putchar(*fmt);
+			write(1, fmt, 1);
 			fmt++;
 			fs.num_chr++;
 		}
