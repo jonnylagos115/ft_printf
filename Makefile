@@ -14,39 +14,28 @@ NAME = libftprintf.a
 
 FLAGS = -Wall -Wextra -Werror
 
-LIBFT = libft_1
+DIR_S = srcs
 
-DIR_S = sources
+OBJS_1 = $(patsubst %.c,%.o,$(wildcard ./srcs/*.c))
+OBJS_2 = $(patsubst %.c,%.o,$(wildcard ./srcs/handle_datatypes/*.c))
 
-DIR_O = temporary
-
-HEADER = include
-
-SOURCES = ft_printf.c parse.c print_args.c handle_args.c width.c flags.c precision.c
-
-SRCS = $(addprefix $(DIR_S)/,$(SOURCES))
-
-OBJS = $(addprefix $(DIR_O)/,$(SOURCES:.c=.o))
+silent:
+	@make all -s
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
-	@make -C $(LIBFT)
+$(NAME): $(OBJS_1) $(OBJS_2)
+	$(MAKE) all -C libft_1
 	@cp libft_1/libft.a ./$(NAME)
-	@ar rc $(NAME) $(OBJS)
+	@ar -rcs $(NAME) $(OBJS_1) $(OBJS_2)
 	@ranlib $(NAME)
 
-$(DIR_O)/%.o: $(DIR_S)/%.c
-	@mkdir -p temporary
-	@$(CC) $(FLAGS) -I $(HEADER) -o $@ -c $<
-
 clean:
-	@rm -f $(OBJS)
-	@rm -rf $(DIR_O)
-	@make clean -C $(LIBFT)
+	@make clean -C libft_1 -s
+	@rm -f $(OBJS_1) $(OBJS_2)
 
 fclean: clean
-	@rm -f $(NAME)
-	@make fclean -C $(LIBFT)
+	-@rm -f $(NAME)
+	-@make fclean -C libft_1 -s
 
 re: fclean all

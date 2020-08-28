@@ -6,7 +6,7 @@
 /*   By: jlagos <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/18 10:58:28 by jlagos            #+#    #+#             */
-/*   Updated: 2019/04/11 13:47:33 by jlagos           ###   ########.fr       */
+/*   Updated: 2019/08/07 17:27:43 by jlagos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ int				ft_atoi(const char *str);
 void			ft_bzero(void *s, size_t n);
 int				ft_find_endl(char *str);
 char			*ft_itoa(int n);
+void	        *ft_memcpy(void *str1, const void *std2, size_t n);
 void			ft_putchar(char c);
 void			ft_putendl(char const *s);
 void			ft_putnbr(int n);
@@ -48,5 +49,7 @@ char			*ft_strtrim(char const *s);
 char			**ft_2dstrnew(int len);
 int				ft_tolower(int c);
 int				ft_toupper(int c);
+int				ft_isalpha(int c);
+int		        ft_isdigit(int c);
 
 #endif
