@@ -19,11 +19,11 @@ t_fsptr	create_formatspecifer_obj(void)
 	fs_ptr = malloc(sizeof(*fs_ptr));
 	if (fs_ptr)
 	{
+		fs_ptr->handle_mw_p = handle_minw_prec;
 		fs_ptr->args.c_arg = 0;
 		fs_ptr->args.cstr_arg = NULL;
 		fs_ptr->args.signed_arg = 0;
 		fs_ptr->args.unsigned_arg = 0;
-		fs_ptr->args.float_arg = 0;
 		fs_ptr->args.num_bytes = 0;
 		fs_ptr->sfc = 0;
 		fs_ptr->flag_spec = 0;
@@ -37,7 +37,8 @@ t_fsptr	create_formatspecifer_obj(void)
 	return (fs_ptr);
 }
 
-void	destroy_formatspecifer_obj(t_fsptr fsptr)
+void	destroy_formatspecifer_obj(t_fsptr *fsptr)
 {
-	free(fsptr);
+	free(*fsptr);
+	*fsptr = NULL;
 }

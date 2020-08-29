@@ -22,7 +22,7 @@ intmax_t	get_signed_nbr(va_list args, int length_s)
 	else if (length_s & l)
 		n = (long)n;
 	else if (length_s & ll)
-		n = (long long)n; 
+		n = (long long)n;
 	else if (length_s & HH)
 		n = (char)n;
 	else if (length_s & H)
@@ -30,29 +30,19 @@ intmax_t	get_signed_nbr(va_list args, int length_s)
 	return (n);
 }
 
-int		snbr_digits(intmax_t nbr)
-{
-	int num_c;
-
-	num_c = 1;
-	while ((nbr = nbr / 10))
-		num_c++;
-	return (num_c);
-}
-
-void	ft_print_signed_nbr(t_fsptr fsptr, intmax_t n)
+void		ft_print_signed_nbr(t_fsptr fsptr, intmax_t n)
 {
 	if (n < 0)
 	{
 		if (fsptr->no_minus)
 			write(1, "-", 1);
-		if (n == INT_MIN)
+		if (n == (-INT_MAX - 1))
 		{
 			write(1, "2", 1);
 			n %= 1000000000;
 			fsptr->num_chr++;
 		}
-		else if (n == LLONG_MIN)
+		else if (n == (-LLONG_MAX - 1LL))
 		{
 			write(1, "9", 1);
 			n %= 1000000000000000000;

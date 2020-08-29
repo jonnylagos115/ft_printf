@@ -38,26 +38,28 @@ void	check_for_flags(const char **str, t_fsptr fs_ptr)
 	}
 }
 
-void	check_for_width(const char **str, t_fsptr fs_ptr)
+void	check_for_minw_prec(const char **str, t_fsptr fs_ptr)
 {
-	if (ft_isdigit(**str))
-		fs_ptr->sfc |= MINWIDTH;
-	while (ft_isdigit(**str))
+	if (ft_isdigit(**str) || **str == '*')
 	{
-		fs_ptr->minw_spec = (fs_ptr->minw_spec * 10) + **str - '0';
-		(*str)++;
+		fs_ptr->sfc |= MINWIDTH;
+		if (**str == '*')
+		{
+			fs_ptr->minw_spec = **str;
+			(*str)++;
+		}
 	}
-}
-
-void	check_for_precision(const char **str, t_fsptr fs_ptr)
-{
+	while (ft_isdigit(**str))
+		fs_ptr->minw_spec = (fs_ptr->minw_spec * 10) + *(*str)++ - '0';
 	if (**str == '.')
 	{
 		fs_ptr->sfc |= PREC;
 		(*str)++;
 		while (ft_isdigit(**str))
+			fs_ptr->prec_spec = (fs_ptr->prec_spec * 10) + *(*str)++ - '0';
+		if (**str == '*')
 		{
-			fs_ptr->prec_spec = (fs_ptr->prec_spec * 10) + **str - '0';
+			fs_ptr->prec_spec = **str;
 			(*str)++;
 		}
 	}
@@ -105,8 +107,7 @@ int		check_for_spec(const char **str, t_fsptr fs_ptr)
 int		parse_f_specifiers(const char **fmt, t_fsptr fs_ptr)
 {
 	check_for_flags(fmt, fs_ptr);
-	check_for_width(fmt, fs_ptr);
-	check_for_precision(fmt, fs_ptr);
+	check_for_minw_prec(fmt, fs_ptr);
 	check_for_length(fmt, fs_ptr);
 	return (check_for_spec(fmt, fs_ptr));
 }

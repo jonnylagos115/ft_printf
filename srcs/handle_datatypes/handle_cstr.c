@@ -12,22 +12,26 @@
 
 #include "../../includes/ft_printf.h"
 
-void		ft_display_str(t_fsptr fsptr)
+void		ft_print_cstr(t_fsptr fsptr)
 {
 	int		i;
 
 	if (fsptr->args.cstr_arg)
 	{
 		i = -1;
-		if (fsptr->format_spec == 'p') //adding '0x' count to num_bytes
-		{
-			if (fsptr->sfc & PREC)	
+		if (fsptr->format_spec == 'p')
+			if (fsptr->sfc & PREC)
 				i += 2;
-			//fsptr->args.num_bytes += 2;
-		}
 		while (++i != fsptr->args.num_bytes)
 			ft_putchar(fsptr->args.cstr_arg[i]);
 		ft_strdel(&fsptr->args.cstr_arg);
+	}
+	else if (fsptr->format_spec == 'c' || fsptr->format_spec == '%')
+	{
+		if (fsptr->format_spec == '%')
+			fsptr->args.c_arg = '%';
+		ft_putchar(fsptr->args.c_arg);
+		fsptr->args.num_bytes++;
 	}
 	else if (fsptr->format_spec == 's')
 		write(1, "(null)", 6);

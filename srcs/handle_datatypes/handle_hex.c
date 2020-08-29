@@ -44,14 +44,14 @@ void	ft_printhex(t_fsptr fsptr, uintmax_t num)
 	uintmax_t remainder;
 
 	remainder = num % 16;
-	if (num / 16)	//used recursion to print remainders from last to first
+	if (num / 16)
 		ft_printhex(fsptr, num / 16);
 	if (fsptr->args.unsigned_arg && fsptr->flag_spec & SHARP)
 	{
-			write(1, "0", 1);
-			write(1, &fsptr->format_spec, 1);
-			fsptr->num_chr++;
-			fsptr->flag_spec &= ~(SHARP);
+		write(1, "0", 1);
+		write(1, &fsptr->format_spec, 1);
+		fsptr->num_chr++;
+		fsptr->flag_spec &= ~(SHARP);
 	}
 	if (remainder > 9)
 	{

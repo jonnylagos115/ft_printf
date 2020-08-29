@@ -39,12 +39,14 @@ void	print_minw(t_fsptr fsptr)
 	fsptr->num_chr += fsptr->minw_spec;
 	while (fsptr->minw_spec--)
 		write(1, &flag, 1);
+	print_flags(fsptr);
 }
 
 void	print_prec(t_fsptr fsptr)
 {
-	if ((fsptr->sfc & PREC) && fsptr->format_spec != 's')
+	if (fsptr->sfc & PREC && fsptr->format_spec != 's')
 	{
+		print_flags(fsptr);
 		if ((fsptr->format_spec == 'd' || fsptr->format_spec == 'i')
 		&& fsptr->args.signed_arg < 0)
 		{
@@ -68,6 +70,7 @@ void	print_prec(t_fsptr fsptr)
 
 void	sfc_prec_minw(t_fsptr fsptr)
 {
+	handle_flags(fsptr);
 	if (fsptr->args.signed_arg < 0 && (fsptr->sfc & MINWIDTH))
 		fsptr->minw_spec--;
 	if (fsptr->flag_spec & ZERO && (fsptr->sfc & PREC))

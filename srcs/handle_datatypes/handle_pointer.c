@@ -17,7 +17,7 @@ void	ft_store_memaddr(void *addr, t_fsptr fsptr)
 	char		buf[16];
 	int			i;
 	int			j;
-	uintptr_t 	p;
+	uintptr_t	p;
 
 	p = (uintptr_t)addr;
 	i = (sizeof(p) << 3) - 4;
@@ -36,6 +36,6 @@ void	ft_store_memaddr(void *addr, t_fsptr fsptr)
 		fsptr->args.cstr_arg = ft_strdup(buf);
 		fsptr->args.num_bytes = ft_strlen(fsptr->args.cstr_arg);
 	}
-	else //address for a null pointer would output as "(nil)"
+	else
 		fsptr->args.num_bytes = 5;
 }

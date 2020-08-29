@@ -12,22 +12,39 @@
 
 #include "../includes/ft_printf.h"
 
-void	print_flags(t_fsptr fs_ptr)
+void	handle_flags(t_fsptr fsptr)
 {
-	if (fs_ptr->args.signed_arg >= 0 && fs_ptr->format_spec != '%' && (fs_ptr->flag_spec & PLUS || fs_ptr->flag_spec & SPACE))
+	if (fsptr->flag_spec & PLUS || fsptr->flag_spec & SPACE)
 	{
-		if (fs_ptr->flag_spec & PLUS)
-			write(1, "+", 1);
-		else if (fs_ptr->flag_spec & SPACE)
-			write(1, " ", 1);
-		fs_ptr->num_chr++;
-		fs_ptr->args.num_bytes++;
-		fs_ptr->flag_spec &= ~(PLUS);
-		fs_ptr->flag_spec &= ~(SPACE);
+		if (!(fsptr->sfc & PREC)
+		|| fsptr->prec_spec < fsptr->args.num_bytes)
+			fsptr->args.num_bytes++;
+		if (fsptr->flag_spec & PLUS &&
+		fsptr->args.signed_arg < 0)
+			fsptr->flag_spec &= ~(PLUS);
 	}
-	if (fs_ptr->flag_spec & SHARP)
+	if ((fsptr->format_spec == 'x' || fsptr->format_spec == 'X')
+	&& fsptr->flag_spec & SHARP)
+		fsptr->args.num_bytes += 2;
+}
+
+void	print_flags(t_fsptr fsptr)
+{
+	if (fsptr->flag_spec & PLUS)
 	{
-		if (fs_ptr->prec_spec > 0 && fs_ptr->format_spec == 'o')
-			fs_ptr->prec_spec &= ~(SHARP);
+		write(1, "+", 1);
+		fsptr->flag_spec &= ~(PLUS);
+	}
+	else if (fsptr->flag_spec & SPACE)
+	{
+		write(1, " ", 1);
+		fsptr->flag_spec &= ~(SPACE);
+	}
+	if ((fsptr->format_spec == 'x' || fsptr->format_spec == 'X')
+	&& fsptr->flag_spec & SHARP)
+	{
+		write(1, "0", 1);
+		write(1, &fsptr->format_spec, 1);
+		fsptr->flag_spec &= ~(SHARP);
 	}
 }

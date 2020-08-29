@@ -26,29 +26,8 @@ uintmax_t	get_unsigned_nbr(va_list args, int length_s)
 	else if (length_s & l)
 		n = (unsigned long)n;
 	else if (length_s & ll)
-		n = (unsigned long long)n; 
+		n = (unsigned long long)n;
 	return (n);
-}
-
-int			unbr_digits(uintmax_t nbr, char fs)
-{
-	int 				num_c;
-	uintmax_t			i;
-
-	num_c = 1;
-	if (fs == 'x' || fs == 'X')
-		num_c = get_hex_len(nbr);
-	else if (fs == 'o')
-	{
-		num_c--;
-		i = 1;
-		while (++num_c <= 21 && ((i * 8) < nbr))
-			i *= 8;
-	}
-	else
-		while ((nbr = nbr / 10))
-			num_c++;
-	return (num_c);
 }
 
 void		ft_print_unsigned_nbr(t_fsptr fsptr, uintmax_t n)

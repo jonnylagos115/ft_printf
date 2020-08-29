@@ -12,25 +12,24 @@
 
 #include "../includes/ft_printf.h"
 
-int 	my_vfprintf(const char *fmt, va_list arg)
+int		my_vfprintf(const char *fmt, va_list arg)
 {
-	t_fsptr fs_ptr;
-	int num_dchr;
+	t_fsptr	fs_ptr;
+	int		num_dchr;
 
-	num_dchr = 0;
 	fs_ptr = NULL;
+	num_dchr = 0;
 	while (*fmt)
 	{
-		while (*fmt == '%')
+		while (*fmt == '%' && fmt++)
 		{
-			fmt++;
 			fs_ptr = create_formatspecifer_obj();
 			if (!parse_f_specifiers(&fmt, fs_ptr))
 			{
 				handle_ag(fs_ptr, arg);
-				print_args(fs_ptr);
+				num_dchr += print_args(fs_ptr);
 			}
-			num_dchr += fs_ptr->num_chr;
+			destroy_formatspecifer_obj(&fs_ptr);
 		}
 		if (*fmt)
 		{
@@ -38,22 +37,17 @@ int 	my_vfprintf(const char *fmt, va_list arg)
 			fmt++;
 			num_dchr++;
 		}
-		if (fs_ptr)
-		{
-			destroy_formatspecifer_obj(fs_ptr);
-			fs_ptr = NULL;
-		}
 	}
 	return (num_dchr);
 }
 
-int 	ft_printf(const char *restrict format, ...)
+int		ft_printf(const char *restrict format, ...)
 {
-    va_list args;
+	va_list args;
 	int		done;
-	
+
 	va_start(args, format);
 	done = my_vfprintf(format, args);
-    va_end(args);
+	va_end(args);
 	return (done);
 }
