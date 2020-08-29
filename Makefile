@@ -18,6 +18,7 @@ DIR_S = srcs
 
 OBJS_1 = $(patsubst %.c,%.o,$(wildcard ./srcs/*.c))
 OBJS_2 = $(patsubst %.c,%.o,$(wildcard ./srcs/handle_datatypes/*.c))
+OBJS_3 = $(patsubst %.c,%.o,$(wildcard ./srcs/bonus_/*.c));
 
 silent:
 	@make all -s
