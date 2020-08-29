@@ -15,7 +15,7 @@
 # include "ft_printf.h"
 
 typedef struct s_formatspecifier* t_fsptr;
-typedef void (*t_handle_minw_prec) (t_fsptr fsptr);
+typedef void	(*t_handle_minw_prec) (t_fsptr fsptr);
 typedef struct	s_formatspecifierargs
 {
 	char			*cstr_arg;
@@ -29,7 +29,7 @@ typedef struct	s_formatspecifierargs
 typedef struct	s_formatspecifier
 {
 	t_formatspecifierargs	args;
-	t_handle_minw_prec		handle_mw_p; //function pointer
+	t_handle_minw_prec		handle_mw_p;
 	char					sfc;
 	char					flag_spec;
 	int						minw_spec;
@@ -41,7 +41,7 @@ typedef struct	s_formatspecifier
 	bool					no_print;
 }				t_formatspecifier;
 
-t_fsptr	create_formatspecifer_obj();
-void	destroy_formatspecifer_obj(t_fsptr fsptr);
+t_fsptr			create_formatspecifer_obj();
+void			destroy_formatspecifer_obj(t_fsptr *fsptr);
 
 #endif

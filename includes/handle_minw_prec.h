@@ -15,13 +15,12 @@
 # include "ft_printf.h"
 
 typedef struct s_formatspecifier* t_fsptr;
-typedef void (*t_handle_minw_prec) (t_fsptr fsptr);
+typedef void	(*t_handle_minw_prec) (t_fsptr fsptr);
 
 void	handle_minw_prec(t_fsptr fsptr);
 void	handle_minw_prec_string(t_fsptr fsptr);
-void	handle_minw_prec_pointer(t_fsptr fsptr);
 void	print_minw(t_fsptr fsptr);
-void 	print_prec(t_fsptr fsptr);
+void	print_prec(t_fsptr fsptr);
 void	sfc_prec_minw(t_fsptr fsptr);
 
 #endif
