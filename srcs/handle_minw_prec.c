@@ -115,8 +115,8 @@ void	handle_minw_prec(t_fsptr fsptr)
 
 void	handle_minw_prec_string(t_fsptr fsptr)
 {
-	if ((fsptr->sfc & PREC) &&
-	(fsptr->prec_spec > fsptr->args.num_bytes))
+	if (((fsptr->sfc & PREC) && (fsptr->prec_spec > fsptr->args.num_bytes))
+	|| fsptr->format_spec == 'c' || fsptr->format_spec == '%')
 		fsptr->sfc &= ~(PREC);
 	else if ((fsptr->sfc & PREC) &&
 	fsptr->prec_spec < fsptr->args.num_bytes)
@@ -129,13 +129,8 @@ void	handle_minw_prec_string(t_fsptr fsptr)
 			fsptr->args.num_bytes = 0;
 		}
 	}
-	if ((fsptr->sfc & MINWIDTH) && ((fsptr->minw_spec < fsptr->args.num_bytes)
-	|| (fsptr->format_spec == '%')))
+	if ((fsptr->sfc & MINWIDTH) && fsptr->minw_spec < fsptr->args.num_bytes)
 		fsptr->minw_spec = 0;
 	else if (fsptr->sfc & MINWIDTH)
-	{
 		fsptr->minw_spec -= fsptr->args.num_bytes;
-		if (fsptr->flag_spec & ZERO)
-			fsptr->flag_spec &= ~(ZERO);
-	}
 }

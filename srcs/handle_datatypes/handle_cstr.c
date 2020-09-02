@@ -31,11 +31,8 @@ void		ft_print_cstr(t_fsptr fsptr)
 		if (fsptr->format_spec == '%')
 			fsptr->args.c_arg = '%';
 		ft_putchar(fsptr->args.c_arg);
-		fsptr->args.num_bytes++;
 	}
-	else if (fsptr->format_spec == 's')
-		write(1, "(null)", 6);
 	else if (fsptr->format_spec == 'p')
-		write(1, "(nil)", 5);
+		write(1, "0x0", 3);
 	fsptr->num_chr += fsptr->args.num_bytes;
 }

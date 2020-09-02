@@ -43,19 +43,15 @@ int		handle_num_bytes(t_fsptr fsptr)
 	u_nbr = fsptr->args.unsigned_arg;
 	s_nbr = fsptr->args.signed_arg;
 	if (fsptr->format_spec == 'u')
-		while (u_nbr = u_nbr / 10)
+		while ((u_nbr = u_nbr / 10))
 			num_c++;
 	else if (fsptr->format_spec == 'd' || fsptr->format_spec == 'i')
-		while (s_nbr = s_nbr / 10)
+		while ((s_nbr = s_nbr / 10))
 			num_c++;
 	else if (fsptr->format_spec == 'x' || fsptr->format_spec == 'X')
 		num_c = get_hex_len(u_nbr);
 	else if (fsptr->format_spec == 's')
-	{
 		num_c = ft_strlen(fsptr->args.cstr_arg);
-		if (!fsptr->args.cstr_arg)
-			num_c = 6;
-	}
 	return (num_c);
 }
 
@@ -67,15 +63,19 @@ void	handle_ag(t_fsptr fsptr, va_list args)
 	else if (fsptr->format_spec == 'u' || fsptr->format_spec == 'x' ||
 	fsptr->format_spec == 'X')
 		fsptr->args.unsigned_arg = get_unsigned_nbr(args, fsptr->len_spec);
-	else if (fsptr->format_spec == 'c')
+	else if (fsptr->format_spec == 'c' || fsptr->format_spec == '%')
 	{
-		fsptr->args.c_arg = va_arg(args, int);
+		if (fsptr->format_spec == 'c')
+			fsptr->args.c_arg = va_arg(args, int);
 		fsptr->handle_mw_p = handle_minw_prec_string;
+		fsptr->args.num_bytes++;
 	}
 	else if (fsptr->format_spec == 's')
 	{
 		fsptr->args.cstr_arg = ft_strdup(va_arg(args, char *));
 		fsptr->handle_mw_p = handle_minw_prec_string;
+		if (!fsptr->args.cstr_arg)
+			fsptr->args.cstr_arg = ft_strdup("(null)");
 	}
 	fsptr->args.num_bytes = handle_num_bytes(fsptr);
 	if (fsptr->format_spec == 'p')

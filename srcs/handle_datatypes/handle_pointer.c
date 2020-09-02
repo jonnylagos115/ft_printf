@@ -37,5 +37,5 @@ void	ft_store_memaddr(void *addr, t_fsptr fsptr)
 		fsptr->args.num_bytes = ft_strlen(fsptr->args.cstr_arg);
 	}
 	else
-		fsptr->args.num_bytes = 5;
+		fsptr->args.num_bytes = 3;
 }
