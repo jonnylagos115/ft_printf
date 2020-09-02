@@ -14,29 +14,45 @@ NAME = libftprintf.a
 
 FLAGS = -Wall -Wextra -Werror
 
-DIR_S = srcs
+INCLUDES = -I./includes
 
-OBJS_1 = $(patsubst %.c,%.o,$(wildcard ./srcs/*.c))
-OBJS_2 = $(patsubst %.c,%.o,$(wildcard ./srcs/handle_datatypes/*.c))
-OBJS_3 = $(patsubst %.c,%.o,$(wildcard ./srcs/bonus_/*.c));
+SRCS = srcs/ft_printf.c \
+					srcs/parse.c \
+					srcs/handle_ag.c \
+					srcs/handle_minw_prec.c \
+					srcs/formatspecifer.c \
+					srcs/print_args.c \
+					srcs/handle_flags.c \
+					srcs/handle_datatypes/handle_cstr.c \
+					srcs/handle_datatypes/handle_hex.c \
+					srcs/handle_datatypes/handle_int.c \
+					srcs/handle_datatypes/handle_pointer.c \
+					srcs/handle_datatypes/handle_uint.c
 
-silent:
-	@make all -s
+SRCSSB = bonus_/bonus.c
+
+OBJS = $(SRCS:.c=.o)
+
+OBJSB = $(OBJS) $(SRCSSB:.c=.o)
+
+$(NAME): $(OBJS)
+	$(MAKE) all -C libft
+	@cp libft/libft.a ./$(NAME)
+	@ar -rcs $(NAME) $(OBJS)
 
 all: $(NAME)
 
-$(NAME): $(OBJS_1) $(OBJS_2)
-	$(MAKE) all -C libft_1
-	@cp libft_1/libft.a ./$(NAME)
-	@ar -rcs $(NAME) $(OBJS_1) $(OBJS_2)
-	@ranlib $(NAME)
-
 clean:
-	@make clean -C libft_1 -s
-	@rm -f $(OBJS_1) $(OBJS_2)
+	@make clean -C libft -s
+	@rm -f $(OBJSB)
 
 fclean: clean
 	-@rm -f $(NAME)
-	-@make fclean -C libft_1 -s
+	-@make fclean -C libft -s
 
 re: fclean all
+
+bonus: $(OBJSB)
+	$(MAKE) all -C libft
+	@cp libft/libft.a ./$(NAME)
+	@ar -rcs $(NAME) $(OBJSB)

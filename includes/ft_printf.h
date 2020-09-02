@@ -17,7 +17,7 @@
 # include <stdio.h>
 # include <limits.h>
 # include <stdbool.h>
-# include "../libft_1/libft.h"
+# include "libft.h"
 # include "formatspecifer.h"
 # include "handle_minw_prec.h"
 
